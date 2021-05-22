@@ -5,12 +5,14 @@ import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 public class ArrayListProductDao implements ProductDao {
     private long currId;
     private List<Product> products;
-
+    Lock lock;
 
     public ArrayListProductDao() {
         this.products = new ArrayList<>();
@@ -39,18 +41,30 @@ public class ArrayListProductDao implements ProductDao {
     }
 
     @Override
-    public synchronized void save(Product product) {
+    public void save(Product product) {
+        lock = new ReentrantLock();
+        lock.lock();
+        try {
             if (product.getId() != null) {
                 products.set(products.indexOf(product.getId()), product);
             } else {
                 product.setId(currId++);
                 products.add(product);
             }
+        } finally {
+            lock.lock();
+        }
     }
 
     @Override
-    public synchronized void delete(Long id) {
+    public void delete(Long id) {
+        lock = new ReentrantLock();
+        lock.lock();
+        try {
             products.remove(getProduct(id));
+        } finally {
+            lock.unlock();
+        }
     }
 
     private void fillSampleProducts(){
