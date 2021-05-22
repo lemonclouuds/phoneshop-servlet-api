@@ -3,10 +3,12 @@ package com.es.phoneshop.model.product;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import java.math.BigDecimal;
+import java.util.Currency;
 
-public class ArrayListProductDaoTest
-{
+import static org.junit.Assert.*;
+
+public class ArrayListProductDaoTest {
     private ProductDao productDao;
 
     @Before
@@ -16,6 +18,27 @@ public class ArrayListProductDaoTest
 
     @Test
     public void testFindProductsNoResults() {
-        assertTrue(productDao.findProducts().isEmpty());
+        assertFalse(productDao.findProducts().isEmpty());
     }
+
+    @Test
+    public void testSaveNewProduct() {
+        Currency usd = Currency.getInstance("USD");
+        Product product = new Product("test-product", "Apple iPhone", new BigDecimal(200), usd, 10, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Apple/Apple%20iPhone.jpg");
+        productDao.save(product);
+        assertTrue(product.getId() != null);
+        Product result = productDao.getProduct(Long.valueOf(product.getId()));
+        assertNotNull(result);
+        assertEquals("test-product", result.getCode());
+    }
+
+    @Test
+    public void testDeleteProduct() {
+        Currency usd = Currency.getInstance("USD");
+        Product product = new Product("test-product", "Specially for tests", new BigDecimal(200), usd, 10, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Apple/Apple%20iPhone.jpg");
+        productDao.save(product);
+        productDao.delete(product.getId());
+        assertFalse(productDao.findProducts().contains(product));
+    }
+
 }

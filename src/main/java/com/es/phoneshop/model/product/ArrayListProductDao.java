@@ -52,10 +52,7 @@ public class ArrayListProductDao implements ProductDao {
 
     @Override
     public synchronized void delete(Long id) {
-            products.remove(products.stream()
-                    .filter(product -> id.equals(product.getId()))
-                    .findAny()
-                    .get());
+            products.remove(getProduct(id));
     }
 
     private void fillSampleProducts(){
