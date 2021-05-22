@@ -5,18 +5,23 @@ import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 public class ArrayListProductDao implements ProductDao {
     private long currId;
     private List<Product> products;
 
+
     public ArrayListProductDao() {
         this.products = new ArrayList<>();
         fillSampleProducts();
+
     }
 
     @Override
-    public Product getProduct(Long id) {
+    public synchronized Product getProduct(Long id) {
         try {
             return products.stream()
                     .filter(product -> id.equals(product.getId()))
@@ -28,26 +33,29 @@ public class ArrayListProductDao implements ProductDao {
     }
 
     @Override
-    public List<Product> getProductsList() {
-        return products;
+    public synchronized List<Product> findProducts() {
+        return products.stream()
+                .filter(product -> product.getPrice() != null)
+                .filter(product -> product.getStock() > 0)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public void save(Product product) {
-        if (product.getId() != null) {
-            products.set(products.indexOf(product.getId()), product);
-        } else {
-            product.setId(currId++);
-            products.add(product);
-        }
+    public synchronized void save(Product product) {
+            if (product.getId() != null) {
+                products.set(products.indexOf(product.getId()), product);
+            } else {
+                product.setId(currId++);
+                products.add(product);
+            }
     }
 
     @Override
-    public void delete(Long id) {
-        products.remove(products.stream()
-                .filter(product -> id.equals(product.getId()))
-                .findAny()
-                .get());
+    public synchronized void delete(Long id) {
+            products.remove(products.stream()
+                    .filter(product -> id.equals(product.getId()))
+                    .findAny()
+                    .get());
     }
 
     private void fillSampleProducts(){
