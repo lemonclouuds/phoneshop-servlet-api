@@ -4,67 +4,64 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 public class ArrayListProductDao implements ProductDao {
     private long currId;
     private List<Product> products;
-    Lock lock;
 
     public ArrayListProductDao() {
         this.products = new ArrayList<>();
         fillSampleProducts();
-
     }
 
     @Override
-    public synchronized Product getProduct(Long id) {
-        try {
-            return products.stream()
+    public synchronized Product getProduct(Long id) throws ProductNotFoundException {
+        if (id == null)
+            throw new ProductNotFoundException();
+        return products.stream()
                     .filter(product -> id.equals(product.getId()))
                     .findAny()
-                    .get();
-        } catch (NoSuchElementException ex) {
-            return null;
-        }
+                    .orElseThrow(() -> new ProductNotFoundException());
     }
 
     @Override
     public synchronized List<Product> findProducts() {
         return products.stream()
-                .filter(product -> product.getPrice() != null)
-                .filter(product -> product.getStock() > 0)
+                .filter(this::isProductNotNull)
+                .filter(this::isPriceNotNull)
+                .filter(this::isStockPositive)
                 .collect(Collectors.toList());
     }
 
+    private boolean isProductNotNull(Product product) {
+        return product != null;
+    }
+
+    private boolean isPriceNotNull(Product product) {
+        return product.getPrice() != null;
+    }
+
+    private boolean isStockPositive(Product product) {
+        return product.getStock() > 0;
+    }
+
     @Override
-    public void save(Product product) {
-        lock = new ReentrantLock();
-        lock.lock();
-        try {
-            if (product.getId() != null) {
-                products.set(products.indexOf(product.getId()), product);
-            } else {
-                product.setId(currId++);
-                products.add(product);
-            }
-        } finally {
-            lock.lock();
+    public synchronized void save(Product product) {
+        if (product.getId() != null) {
+            products.set(products.indexOf(product.getId()), product);
+        } else {
+            product.setId(currId++);
+            products.add(product);
         }
     }
 
     @Override
-    public void delete(Long id) {
-        lock = new ReentrantLock();
-        lock.lock();
-        try {
-            products.remove(getProduct(id));
-        } finally {
-            lock.unlock();
-        }
+    public synchronized void delete(Long id) throws ProductNotFoundException {
+        if (id == null)
+            throw new ProductNotFoundException();
+        if (!products.removeIf(product -> id.equals(product.getId())))
+            throw new ProductNotFoundException();
     }
 
     private void fillSampleProducts(){
@@ -82,6 +79,5 @@ public class ArrayListProductDao implements ProductDao {
         save(new Product("simc56", "Siemens C56", new BigDecimal(70), usd, 20, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Siemens/Siemens%20C56.jpg"));
         save(new Product("simc61", "Siemens C61", new BigDecimal(80), usd, 30, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Siemens/Siemens%20C61.jpg"));
         save(new Product("simsxg75", "Siemens SXG75", new BigDecimal(150), usd, 40, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Siemens/Siemens%20SXG75.jpg"));
-
     }
 }

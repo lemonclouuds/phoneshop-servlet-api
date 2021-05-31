@@ -22,7 +22,7 @@ public class ArrayListProductDaoTest {
     }
 
     @Test
-    public void testSaveNewProduct() {
+    public void testSaveNewProduct() throws ProductNotFoundException {
         Currency usd = Currency.getInstance("USD");
         Product product = new Product("test-product", "Apple iPhone", new BigDecimal(200), usd, 10, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Apple/Apple%20iPhone.jpg");
         productDao.save(product);
@@ -33,12 +33,12 @@ public class ArrayListProductDaoTest {
     }
 
     @Test
-    public void testDeleteProduct() {
+    public void testDeleteProduct() throws ProductNotFoundException {
         Currency usd = Currency.getInstance("USD");
         Product product = new Product("test-product", "Specially for tests", new BigDecimal(200), usd, 10, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Apple/Apple%20iPhone.jpg");
         productDao.save(product);
         productDao.delete(product.getId());
         assertFalse(productDao.findProducts().contains(product));
     }
-
 }
+
