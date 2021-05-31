@@ -2,6 +2,7 @@ package com.es.phoneshop.model.product;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Currency;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,11 +27,24 @@ public class ArrayListProductDao implements ProductDao {
     }
 
     @Override
-    public synchronized List<Product> findProducts() {
+    public synchronized List<Product> findProducts(String query, SortField sortField, SortOrder sortOrder) {
+        Comparator<Product> comparator = Comparator.comparing(product -> {
+            if (sortField != null && SortField.description == sortField) {
+                return (Comparable) product.getDescription();
+            } else {
+                return (Comparable) product.getPrice();
+            }
+        });
+        if (sortOrder != null && SortOrder.desc == sortOrder) {
+            comparator = comparator.reversed();
+        }
+
         return products.stream()
+                .filter(product -> query == null || query.isEmpty() || product.getDescription().contains(query))
                 .filter(this::isProductNotNull)
                 .filter(this::isPriceNotNull)
                 .filter(this::isStockPositive)
+                .sorted(comparator)
                 .collect(Collectors.toList());
     }
 
