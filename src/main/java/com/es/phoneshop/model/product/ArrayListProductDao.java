@@ -30,11 +30,11 @@ public class ArrayListProductDao implements ProductDao {
     @Override
     public synchronized Product getProduct(Long id) throws ProductNotFoundException {
         if (id == null)
-            throw new ProductNotFoundException();
+            throw new ProductNotFoundException(id);
         return products.stream()
                     .filter(product -> id.equals(product.getId()))
                     .findAny()
-                    .orElseThrow(() -> new ProductNotFoundException());
+                    .orElseThrow(() -> new ProductNotFoundException(id));
     }
 
     @Override
@@ -84,9 +84,9 @@ public class ArrayListProductDao implements ProductDao {
     @Override
     public synchronized void delete(Long id) throws ProductNotFoundException {
         if (id == null)
-            throw new ProductNotFoundException();
+            throw new ProductNotFoundException(id);
         if (!products.removeIf(product -> id.equals(product.getId()))) {
-            throw new ProductNotFoundException();
+            throw new ProductNotFoundException(id);
         } else {
             currId--;
         };

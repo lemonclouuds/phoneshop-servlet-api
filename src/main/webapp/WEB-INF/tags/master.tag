@@ -17,5 +17,8 @@
   <main>
     <jsp:doBody/>
   </main>
+  <p>
+    (c) lemonclouuds
+</p>
 </body>
 </html>
