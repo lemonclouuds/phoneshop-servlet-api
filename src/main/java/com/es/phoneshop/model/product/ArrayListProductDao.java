@@ -69,7 +69,12 @@ public class ArrayListProductDao implements ProductDao {
     @Override
     public synchronized void save(Product product) {
         if (product.getId() != null) {
-            products.set(products.indexOf(product.getId()), product);
+            List<PriceHistory> prices = new ArrayList<>();
+            if (products.removeIf(product1 -> isProductSuitableForDeleting(product, product1, prices))) {
+                product.getPriceHistoryList().addAll(prices);
+            }
+            products.add(product);
+            return;
         } else {
             product.setId(currId++);
             products.add(product);
@@ -86,5 +91,16 @@ public class ArrayListProductDao implements ProductDao {
         } else {
             currId--;
         }
+    }
+
+    private boolean isProductPriceUpdated(Product newProduct, Product currentProduct) {
+        return newProduct.getId().equals(currentProduct.getId()) && !newProduct.getPrice().equals(currentProduct.getPrice());
+    }
+
+    private boolean isProductSuitableForDeleting(Product newProduct, Product currentProduct, List<PriceHistory> priceHistory) {
+        if (isProductPriceUpdated(newProduct, currentProduct)) {
+            priceHistory.addAll(currentProduct.getPriceHistoryList());
+        }
+        return newProduct.getId().equals(currentProduct.getId());
     }
 }
