@@ -1,9 +1,11 @@
 package com.es.phoneshop.model.product;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ArrayListProductDao implements ProductDao {
     private long currId;
@@ -34,24 +36,39 @@ public class ArrayListProductDao implements ProductDao {
 
     @Override
     public synchronized List<Product> findProducts(String query, SortField sortField, SortOrder sortOrder) {
-        Comparator<Product> comparator = Comparator.comparing(product -> {
-            if (sortField != null && SortField.description == sortField) {
-                return (Comparable) product.getDescription();
-            } else {
-                return (Comparable) product.getPrice();
-            }
-        });
-        if (sortOrder != null && SortOrder.desc == sortOrder) {
+        Comparator<Product> comparator;
+        if (SortField.description == sortField) {
+            comparator = Comparator.comparing(Product::getDescription);
+        } else {
+            comparator = Comparator.comparing(Product::getPrice);
+        }
+        if (SortOrder.desc == sortOrder) {
             comparator = comparator.reversed();
         }
 
-        return products.stream()
+        List<Product> result = products.stream()
                 .filter(this::isProductNotNull)
                 .filter(this::isPriceNotNull)
                 .filter(this::isStockPositive)
-                .filter(product -> query == null || query.isEmpty() || product.getDescription().contains(query))
-                .sorted(comparator)
+                .filter(product -> isProductMatchingQuery(product, query))
+                .sorted((product1, product2) -> {
+                    long firstEntrance = countEntrance(product1, query);
+                    long secondEntrance = countEntrance(product2, query);
+                    if (firstEntrance == secondEntrance) {
+                        return Float.compare(entranceMatchesDescription(product2, secondEntrance),
+                                             entranceMatchesDescription(product1, firstEntrance));
+                    } else {
+                        return Long.compare(secondEntrance, firstEntrance);
+                    }
+                })
                 .collect(Collectors.toList());
+
+        if (sortField != null) {
+            result = result.stream()
+                    .sorted(comparator)
+                    .collect(Collectors.toList());
+        }
+        return result;
     }
 
     private boolean isProductNotNull(Product product) {
@@ -73,12 +90,10 @@ public class ArrayListProductDao implements ProductDao {
             if (products.removeIf(product1 -> isProductSuitableForDeleting(product, product1, prices))) {
                 product.getPriceHistoryList().addAll(prices);
             }
-            products.add(product);
-            return;
         } else {
             product.setId(currId++);
-            products.add(product);
         }
+        products.add(product);
     }
 
     @Override
@@ -101,6 +116,32 @@ public class ArrayListProductDao implements ProductDao {
         if (isProductPriceUpdated(newProduct, currentProduct)) {
             priceHistory.addAll(currentProduct.getPriceHistoryList());
         }
+
         return newProduct.getId().equals(currentProduct.getId());
+    }
+
+    private boolean isProductMatchingQuery(Product product, String query) {
+        if (query == null || query.isEmpty()) {
+            return true;
+        }
+        Stream<String> words = Arrays.stream(query.trim().split("\\s+"));
+
+        return words.anyMatch(word ->Arrays.asList(product.getDescription().split(" ")).contains(word));
+    }
+
+    private long countEntrance(Product product, String query) {
+        if (query == null || query.isEmpty()) {
+            return 0;
+        }
+        List<String> words = new ArrayList<>(Arrays.asList(query.trim().split("\\s+")));
+        Stream<String> description = Arrays.stream(product.getDescription().split("\\s+"));
+
+        return description.filter(words::contains).count();
+    }
+
+    private float entranceMatchesDescription(Product product, long entrance) {
+        Stream<String> description = Arrays.stream(product.getDescription().split("\\s+"));
+
+        return (float) entrance / description.count();
     }
 }
