@@ -1,11 +1,7 @@
 package com.es.phoneshop.model.product;
 
-import com.es.phoneshop.data.DataFiller;
-
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Currency;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,7 +20,6 @@ public class ArrayListProductDao implements ProductDao {
 
     private ArrayListProductDao() {
         this.products = new ArrayList<>();
-        //fillSampleProducts();
     }
 
     @Override
@@ -51,10 +46,10 @@ public class ArrayListProductDao implements ProductDao {
         }
 
         return products.stream()
-                .filter(product -> query == null || query.isEmpty() || product.getDescription().contains(query))
                 .filter(this::isProductNotNull)
                 .filter(this::isPriceNotNull)
                 .filter(this::isStockPositive)
+                .filter(product -> query == null || query.isEmpty() || product.getDescription().contains(query))
                 .sorted(comparator)
                 .collect(Collectors.toList());
     }
@@ -83,12 +78,13 @@ public class ArrayListProductDao implements ProductDao {
 
     @Override
     public synchronized void delete(Long id) throws ProductNotFoundException {
-        if (id == null)
+        if (id == null) {
             throw new ProductNotFoundException(id);
+        }
         if (!products.removeIf(product -> id.equals(product.getId()))) {
             throw new ProductNotFoundException(id);
         } else {
             currId--;
-        };
+        }
     }
 }
