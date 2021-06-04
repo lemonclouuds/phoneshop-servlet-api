@@ -34,6 +34,14 @@ public class ArrayListProductDao implements ProductDao {
                     .orElseThrow(() -> new ProductNotFoundException(id));
     }
 
+    public synchronized List<Product> findProducts() {
+        return products.stream()
+                .filter(this::isProductNotNull)
+                .filter(this::isPriceNotNull)
+                .filter(this::isStockPositive)
+                .collect(Collectors.toList());
+    }
+
     @Override
     public synchronized List<Product> findProducts(String query, SortField sortField, SortOrder sortOrder) {
         Comparator<Product> comparator;
