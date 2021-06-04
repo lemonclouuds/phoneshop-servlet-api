@@ -49,19 +49,22 @@ public class ArrayListProductDao implements ProductDao {
     @Override
     public synchronized void save(Product product) {
         if (product.getId() != null) {
-            products.set(products.indexOf(product.getId()), product);
-        } else {
-            product.setId(currId++);
+            if (products.removeIf(product1 -> product1.getId().equals(product.getId()))) {
+            } else {
+                product.setId(currId++);
+            }
             products.add(product);
         }
     }
 
     @Override
     public synchronized void delete(Long id) throws ProductNotFoundException {
-        if (id == null)
+        if (id == null) {
             throw new ProductNotFoundException();
-        if (!products.removeIf(product -> id.equals(product.getId())))
+        }
+        if (!products.removeIf(product -> id.equals(product.getId()))) {
             throw new ProductNotFoundException();
+        }
     }
 
     private void fillSampleProducts(){
