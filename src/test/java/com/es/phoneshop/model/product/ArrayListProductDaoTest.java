@@ -132,4 +132,34 @@ public class ArrayListProductDaoTest {
                 productDao.getProduct(product4.getId()));
         assertEquals(expected, productDao.findProducts(query, SortField.PRICE, SortOrder.DESC));
     }
+
+    @Test
+    public void testOneWordQuerySort() {
+        Product product4 = new Product("product4", "Test", new BigDecimal(200), usd, 10, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Apple/Apple%20iPhone.jpg");
+        Product product5 = new Product("product5", "Test A", new BigDecimal(210), usd, 10, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Apple/Apple%20iPhone.jpg");
+        Product product6 = new Product("product6", "Test A 2", new BigDecimal(220), usd, 10, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Apple/Apple%20iPhone.jpg");
+        productDao.save(product4);
+        productDao.save(product5);
+        productDao.save(product6);
+        String query = "Test";
+        List<Product> expected = Arrays.asList(productDao.getProduct(product4.getId()),
+                productDao.getProduct(product5.getId()),
+                productDao.getProduct(product6.getId()));
+        assertEquals(expected, productDao.findProducts(query));
+    }
+
+    @Test
+    public void testTwoWordQuerySort1() {
+        Product product4 = new Product("product4", "Test", new BigDecimal(200), usd, 10, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Apple/Apple%20iPhone.jpg");
+        Product product5 = new Product("product5", "Test A", new BigDecimal(210), usd, 10, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Apple/Apple%20iPhone.jpg");
+        Product product6 = new Product("product6", "Test A 2", new BigDecimal(220), usd, 10, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Apple/Apple%20iPhone.jpg");
+        productDao.save(product4);
+        productDao.save(product5);
+        productDao.save(product6);
+        String query = "Test A";
+        List<Product> expected = Arrays.asList(productDao.getProduct(product5.getId()),
+                productDao.getProduct(product6.getId()),
+                productDao.getProduct(product4.getId()));
+        assertEquals(expected, productDao.findProducts(query));
+    }
 }
