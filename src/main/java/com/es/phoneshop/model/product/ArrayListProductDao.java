@@ -74,22 +74,7 @@ public class ArrayListProductDao implements ProductDao {
             comparator = comparator.reversed();
         }
 
-        List<Product> result = products.stream()
-                .filter(this::isProductNotNull)
-                .filter(this::isPriceNotNull)
-                .filter(this::isStockPositive)
-                .filter(product -> isProductMatchingQuery(product, query))
-                .sorted((product1, product2) -> {
-                    long firstEntrance = countEntrance(product1, query);
-                    long secondEntrance = countEntrance(product2, query);
-                    if (firstEntrance == secondEntrance) {
-                        return Float.compare(entranceMatchesDescription(product2, secondEntrance),
-                                             entranceMatchesDescription(product1, firstEntrance));
-                    } else {
-                        return Long.compare(secondEntrance, firstEntrance);
-                    }
-                })
-                .collect(Collectors.toList());
+        List<Product> result = findProducts(query);
 
         if (sortField != null) {
             result = result.stream()
