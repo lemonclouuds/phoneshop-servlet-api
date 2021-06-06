@@ -12,6 +12,21 @@ header img {
   max-width: 64px;
 }
 
+main {
+    margin-left: 700px;
+    width: 350px;
+}
+
+input {
+    width: 250px;
+}
+button {
+    width: 85px;
+}
+
+table a {
+  text-decoration: none;
+}
 table {
   border-collapse: collapse;
   border : 1px solid gray;
@@ -31,4 +46,8 @@ img.product-tile {
 /* Page specific styles */
 body.product-list {
 
+}
+
+p.footer {
+    text-align: center;
 }

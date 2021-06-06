@@ -17,7 +17,7 @@
   <main>
     <jsp:doBody/>
   </main>
-  <p>
+  <p class="footer">
     (c) lemonclouuds
 </p>
 </body>
