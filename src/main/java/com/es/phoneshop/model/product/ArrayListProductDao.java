@@ -45,12 +45,12 @@ public class ArrayListProductDao implements ProductDao {
     @Override
     public synchronized List<Product> findProducts(String query, SortField sortField, SortOrder sortOrder) {
         Comparator<Product> comparator;
-        if (SortField.description == sortField) {
+        if (SortField.DESCRIPTION == sortField) {
             comparator = Comparator.comparing(Product::getDescription);
         } else {
             comparator = Comparator.comparing(Product::getPrice);
         }
-        if (SortOrder.desc == sortOrder) {
+        if (SortOrder.DESC == sortOrder) {
             comparator = comparator.reversed();
         }
 

@@ -85,7 +85,7 @@ public class ArrayListProductDaoTest {
         List<Product> expected = Arrays.asList(productDao.getProduct(product1.getId()),
                 productDao.getProduct(product2.getId()),
                 productDao.getProduct(product3.getId()));
-        assertEquals(expected, productDao.findProducts(query, SortField.description, SortOrder.asc));
+        assertEquals(expected, productDao.findProducts(query, SortField.DESCRIPTION, SortOrder.ASC));
     }
 
     @Test
@@ -100,7 +100,7 @@ public class ArrayListProductDaoTest {
         List<Product> expected = Arrays.asList(productDao.getProduct(product3.getId()),
                 productDao.getProduct(product2.getId()),
                 productDao.getProduct(product1.getId()));
-        assertEquals(expected, productDao.findProducts(query, SortField.description, SortOrder.desc));
+        assertEquals(expected, productDao.findProducts(query, SortField.DESCRIPTION, SortOrder.DESC));
     }
 
     @Test
@@ -115,7 +115,7 @@ public class ArrayListProductDaoTest {
         List<Product> expected = Arrays.asList(productDao.getProduct(product1.getId()),
                 productDao.getProduct(product2.getId()),
                 productDao.getProduct(product3.getId()));
-        assertEquals(expected, productDao.findProducts(query, SortField.price, SortOrder.asc));
+        assertEquals(expected, productDao.findProducts(query, SortField.PRICE, SortOrder.ASC));
     }
 
     @Test
@@ -130,6 +130,6 @@ public class ArrayListProductDaoTest {
         List<Product> expected = Arrays.asList(productDao.getProduct(product6.getId()),
                 productDao.getProduct(product5.getId()),
                 productDao.getProduct(product4.getId()));
-        assertEquals(expected, productDao.findProducts(query, SortField.price, SortOrder.desc));
+        assertEquals(expected, productDao.findProducts(query, SortField.PRICE, SortOrder.DESC));
     }
 }
