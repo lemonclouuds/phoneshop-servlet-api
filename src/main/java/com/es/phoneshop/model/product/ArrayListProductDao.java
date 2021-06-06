@@ -142,9 +142,8 @@ public class ArrayListProductDao implements ProductDao {
             return 0;
         }
         List<String> words = new ArrayList<>(Arrays.asList(query.trim().split("\\s+")));
-        Stream<String> description = Arrays.stream(product.getDescription().split("\\s+"));
 
-        return description.filter(words::contains).count();
+        return Arrays.stream(product.getDescription().split("\\s+")).filter(words::contains).count();
     }
 
     private float entranceMatchesDescription(Product product, long entrance) {
