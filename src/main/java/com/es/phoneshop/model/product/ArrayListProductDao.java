@@ -29,9 +29,9 @@ public class ArrayListProductDao implements ProductDao {
         if (id == null)
             throw new ProductNotFoundException(id);
         return products.stream()
-                    .filter(product -> id.equals(product.getId()))
-                    .findAny()
-                    .orElseThrow(() -> new ProductNotFoundException(id));
+                .filter(product -> id.equals(product.getId()))
+                .findAny()
+                .orElseThrow(() -> new ProductNotFoundException(id));
     }
 
     public synchronized List<Product> findProducts() {
@@ -99,13 +99,61 @@ public class ArrayListProductDao implements ProductDao {
     @Override
     public synchronized void save(Product product) {
         if (product.getId() != null) {
-            if (products.removeIf(product1 -> product1.getId().equals(product.getId()))) {
-            } else {
-                product.setId(currId++);
+            List<PriceHistory> prices = new ArrayList<>();
+            if (products.removeIf(product1 -> isProductSuitableForDeleting(product, product1, prices))) {
+                product.getPriceHistoryList().addAll(prices);
             }
-            products.add(product);
-
+        } else {
+            product.setId(currId++);
         }
         products.add(product);
+    }
+
+    @Override
+    public synchronized void delete(Long id) throws ProductNotFoundException {
+        if (id == null) {
+            throw new ProductNotFoundException(id);
+        }
+        if (!products.removeIf(product -> id.equals(product.getId()))) {
+            throw new ProductNotFoundException(id);
+        } else {
+            currId--;
+        }
+    }
+
+    private boolean isProductPriceUpdated(Product newProduct, Product currentProduct) {
+        return newProduct.getId().equals(currentProduct.getId()) && !newProduct.getPrice().equals(currentProduct.getPrice());
+    }
+
+    private boolean isProductSuitableForDeleting(Product newProduct, Product currentProduct, List<PriceHistory> priceHistory) {
+        if (isProductPriceUpdated(newProduct, currentProduct)) {
+            priceHistory.addAll(currentProduct.getPriceHistoryList());
+        }
+
+        return newProduct.getId().equals(currentProduct.getId());
+    }
+
+    private boolean isProductMatchingQuery(Product product, String query) {
+        if (query == null || query.isEmpty()) {
+            return true;
+        }
+        Stream<String> words = Arrays.stream(query.trim().split("\\s+"));
+
+        return words.anyMatch(word ->Arrays.asList(product.getDescription().split(" ")).contains(word));
+    }
+
+    private long countEntrance(Product product, String query) {
+        if (query == null || query.isEmpty()) {
+            return 0;
+        }
+        List<String> words = new ArrayList<>(Arrays.asList(query.trim().split("\\s+")));
+
+        return Arrays.stream(product.getDescription().split("\\s+")).filter(words::contains).count();
+    }
+
+    private float entranceMatchesDescription(Product product, long entrance) {
+        Stream<String> description = Arrays.stream(product.getDescription().split("\\s+"));
+
+        return (float) entrance / description.count();
     }
 }
