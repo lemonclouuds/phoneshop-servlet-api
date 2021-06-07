@@ -5,6 +5,9 @@ import com.es.phoneshop.model.product.cart.Cart;
 import com.es.phoneshop.model.product.cart.CartService;
 import com.es.phoneshop.model.product.cart.DefaultCartService;
 import com.es.phoneshop.model.product.cart.OutOfStockException;
+import com.es.phoneshop.model.product.viewHistory.DefaultViewHistoryService;
+import com.es.phoneshop.model.product.viewHistory.ViewHistoryList;
+import com.es.phoneshop.model.product.viewHistory.ViewHistoryService;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -18,20 +21,26 @@ import java.text.ParseException;
 public class ProductDetailsPageServlet extends HttpServlet {
     private ProductDao productDao;
     private CartService cartService;
+    private ViewHistoryService viewHistoryService;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         productDao = ArrayListProductDao.getInstance();
         cartService = DefaultCartService.getInstance();
+        viewHistoryService = DefaultViewHistoryService.getInstance();
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             Long productId = parseProductId(request);
+            ViewHistoryList viewHistoryList = viewHistoryService.getViewHistoryList(request);
+            viewHistoryService.add(viewHistoryList, productId);
+
             request.setAttribute("product", productDao.getProduct(productId));
             request.setAttribute("cart", cartService.getCart(request));
+            request.setAttribute("viewHistory", viewHistoryService.getViewHistoryList(request));
         } catch (ProductNotFoundException | NumberFormatException ex) {
             request.setAttribute("message", "Product not found.");
             response.sendError(404);

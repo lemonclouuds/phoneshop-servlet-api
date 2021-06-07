@@ -66,4 +66,22 @@
         <button>Add to cart</button>
     </p>
   </form>
+  <p>
+  Recently viewed products
+  </p>
+  <table>
+      <c:forEach var="product" items="${viewHistory.lastViewed}">
+        <th>
+          <br>
+            <img class="product-tile" src="${product.imageUrl}">
+          </br>
+            <a href="${pageContext.servletContext.contextPath}/products/${product.id}">
+                ${product.description}
+            </a>
+          <br>
+            <fmt:formatNumber value="${product.price}" type="currency" currencySymbol="${product.currency.symbol}"/>
+          </br>
+        </th>
+      </c:forEach>
+    </table>
 </tags:master>

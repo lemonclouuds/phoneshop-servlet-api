@@ -4,6 +4,9 @@ import com.es.phoneshop.model.product.ArrayListProductDao;
 import com.es.phoneshop.model.product.ProductDao;
 import com.es.phoneshop.model.product.SortField;
 import com.es.phoneshop.model.product.SortOrder;
+import com.es.phoneshop.model.product.viewHistory.DefaultViewHistoryService;
+import com.es.phoneshop.model.product.viewHistory.ViewHistoryList;
+import com.es.phoneshop.model.product.viewHistory.ViewHistoryService;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -15,11 +18,13 @@ import java.util.Optional;
 
 public class ProductListPageServlet extends HttpServlet {
     private ProductDao productDao;
+    private ViewHistoryService viewHistoryService;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         productDao = ArrayListProductDao.getInstance();
+        viewHistoryService = DefaultViewHistoryService.getInstance();
     }
 
     @Override
@@ -31,6 +36,7 @@ public class ProductListPageServlet extends HttpServlet {
                                                         query,
                                                         Optional.ofNullable(sortField).map(name -> SortField.valueOf(name.toUpperCase())).orElse(null),
                                                         Optional.ofNullable(sortOrder).map(name1 -> SortOrder.valueOf(name1.toUpperCase())).orElse(null)));
+        request.setAttribute("viewHistory", viewHistoryService.getViewHistoryList(request));
         request.getRequestDispatcher("/WEB-INF/pages/productList.jsp").forward(request, response);
     }
 }
