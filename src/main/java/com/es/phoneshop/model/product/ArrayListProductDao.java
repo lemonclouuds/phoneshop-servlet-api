@@ -156,4 +156,5 @@ public class ArrayListProductDao implements ProductDao {
 
         return (float) entrance / description.count();
     }
+
 }
