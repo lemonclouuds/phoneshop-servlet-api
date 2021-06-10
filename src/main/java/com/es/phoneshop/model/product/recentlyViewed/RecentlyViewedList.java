@@ -1,4 +1,4 @@
-package com.es.phoneshop.model.product.viewHistory;
+package com.es.phoneshop.model.product.recentlyViewed;
 
 import com.es.phoneshop.model.product.Product;
 
@@ -6,14 +6,14 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
 
-public class ViewHistoryList {
+public class RecentlyViewedList {
     private Deque<Product> lastViewed;
 
-    public ViewHistoryList() {
+    public RecentlyViewedList() {
         this.lastViewed = new ArrayDeque<>();
     }
 
-    public void addProduct(Product product) {
+    public void addProduct(Product product, int amount) {
         if (lastViewed.contains(product)) {
             Product first = lastViewed.peek();
             if (first.equals(product)) {
@@ -30,7 +30,7 @@ public class ViewHistoryList {
             }
             return;
         }
-        if (lastViewed.size() == 3) {
+        if (lastViewed.size() == amount) {
             lastViewed.removeLast();
             lastViewed.addFirst(product);
             return;

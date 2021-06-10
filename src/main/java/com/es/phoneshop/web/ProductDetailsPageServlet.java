@@ -5,9 +5,9 @@ import com.es.phoneshop.model.product.cart.Cart;
 import com.es.phoneshop.model.product.cart.CartService;
 import com.es.phoneshop.model.product.cart.DefaultCartService;
 import com.es.phoneshop.model.product.cart.OutOfStockException;
-import com.es.phoneshop.model.product.viewHistory.DefaultViewHistoryService;
-import com.es.phoneshop.model.product.viewHistory.ViewHistoryList;
-import com.es.phoneshop.model.product.viewHistory.ViewHistoryService;
+import com.es.phoneshop.model.product.recentlyViewed.DefaultRecentlyViewedService;
+import com.es.phoneshop.model.product.recentlyViewed.RecentlyViewedList;
+import com.es.phoneshop.model.product.recentlyViewed.RecentlyViewedService;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -21,26 +21,26 @@ import java.text.ParseException;
 public class ProductDetailsPageServlet extends HttpServlet {
     private ProductDao productDao;
     private CartService cartService;
-    private ViewHistoryService viewHistoryService;
+    private RecentlyViewedService recentlyViewedService;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         productDao = ArrayListProductDao.getInstance();
         cartService = DefaultCartService.getInstance();
-        viewHistoryService = DefaultViewHistoryService.getInstance();
+        recentlyViewedService = DefaultRecentlyViewedService.getInstance();
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             Long productId = parseProductId(request);
-            ViewHistoryList viewHistoryList = viewHistoryService.getViewHistoryList(request);
-            viewHistoryService.add(viewHistoryList, productId);
+            RecentlyViewedList recentlyViewedList = recentlyViewedService.getViewHistoryList(request);
+            recentlyViewedService.add(recentlyViewedList, productId);
 
             request.setAttribute("product", productDao.getProduct(productId));
             request.setAttribute("cart", cartService.getCart(request));
-            request.setAttribute("viewHistory", viewHistoryService.getViewHistoryList(request));
+            request.setAttribute("viewHistory", recentlyViewedService.getViewHistoryList(request));
         } catch (ProductNotFoundException | NumberFormatException ex) {
             request.setAttribute("message", "Product not found.");
             response.sendError(404);
