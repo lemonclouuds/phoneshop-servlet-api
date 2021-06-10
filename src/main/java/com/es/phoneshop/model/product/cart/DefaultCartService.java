@@ -3,8 +3,10 @@ package com.es.phoneshop.model.product.cart;
 import com.es.phoneshop.model.product.ArrayListProductDao;
 import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.product.ProductDao;
+import com.es.phoneshop.model.product.ProductNotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
+
 
 public class DefaultCartService implements CartService{
     private static final String CART_SESSION_ATTRIBUTE = DefaultCartService.class.getName() + ".cart";
@@ -38,6 +40,18 @@ public class DefaultCartService implements CartService{
         if (product.getStock() < quantity) {
             throw new OutOfStockException(product, quantity, product.getStock());
         }
-        cart.getItems().add(new CartItem(product, quantity));
+        CartItem cartItem = new CartItem(product, quantity);
+
+        if (cart.getItems().contains(cartItem)) {
+            CartItem result = cart.getItems().stream()
+                    .filter(cartItem1 -> cartItem1.getProduct().getId().equals(productId))
+                    .findFirst()
+                    .orElseThrow(() -> new ProductNotFoundException(productId));
+            result.setQuantity(result.getQuantity() + quantity);
+            product.setStock(product.getStock() - quantity);
+            return;
+        }
+        cart.getItems().add(cartItem);
+        product.setStock(product.getStock() - quantity);
     }
 }
