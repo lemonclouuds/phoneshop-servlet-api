@@ -22,6 +22,7 @@ public class ProductDetailsPageServlet extends HttpServlet {
     private ProductDao productDao;
     private CartService cartService;
     private RecentlyViewedService recentlyViewedService;
+    private final String ERROR = "error";
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -57,7 +58,7 @@ public class ProductDetailsPageServlet extends HttpServlet {
             NumberFormat format = NumberFormat.getInstance(request.getLocale());
             quantity = format.parse(quantityString).intValue();
         } catch (ParseException e) {
-            request.setAttribute("error", "Not a number");
+            request.setAttribute(ERROR, "Not a number");
             doGet(request, response);
             return;
         }
@@ -66,7 +67,7 @@ public class ProductDetailsPageServlet extends HttpServlet {
         try {
             cartService.add(cart, productId, quantity);
         } catch (OutOfStockException e) {
-            request.setAttribute("error", "Out of stock, available " + e.getStockAvailable());
+            request.setAttribute(ERROR, "Out of stock, available " + e.getStockAvailable());
             doGet(request, response);
             return;
         }

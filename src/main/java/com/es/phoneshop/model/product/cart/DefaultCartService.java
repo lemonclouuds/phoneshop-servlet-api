@@ -11,17 +11,24 @@ public class DefaultCartService implements CartService{
     private static final String CART_SESSION_ATTRIBUTE = DefaultCartService.class.getName() + ".cart";
     private ProductDao productDao;
 
-    private static DefaultCartService instance;
+    private static volatile CartService instance;
 
     private DefaultCartService() {
         productDao = ArrayListProductDao.getInstance();
     }
 
-    public static synchronized DefaultCartService getInstance() {
-        if (instance == null) {
-            instance = new DefaultCartService();
+
+    public static CartService getInstance() {
+        CartService localInstance = instance;
+        if (localInstance == null) {
+            synchronized (ProductDao.class) {
+                localInstance = instance;
+                if (localInstance == null) {
+                    instance = localInstance = new DefaultCartService();
+                }
+            }
         }
-        return instance;
+        return localInstance;
     }
 
     @Override

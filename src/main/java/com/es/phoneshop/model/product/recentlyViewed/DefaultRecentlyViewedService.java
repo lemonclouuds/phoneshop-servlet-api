@@ -11,17 +11,24 @@ public class DefaultRecentlyViewedService implements RecentlyViewedService {
     private final int PRODUCT_AMOUNT = 3;
     private ProductDao productDao;
 
-    private static DefaultRecentlyViewedService instance;
+    private static volatile RecentlyViewedService instance;
 
     private DefaultRecentlyViewedService() {
         productDao = ArrayListProductDao.getInstance();
     }
 
-    public static synchronized DefaultRecentlyViewedService getInstance() {
-        if (instance == null) {
-            instance = new DefaultRecentlyViewedService();
+
+    public static RecentlyViewedService getInstance() {
+        RecentlyViewedService localInstance = instance;
+        if (localInstance == null) {
+            synchronized (ProductDao.class) {
+                localInstance = instance;
+                if (localInstance == null) {
+                    instance = localInstance = new DefaultRecentlyViewedService();
+                }
+            }
         }
-        return instance;
+        return localInstance;
     }
 
     @Override
