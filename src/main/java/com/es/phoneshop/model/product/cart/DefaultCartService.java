@@ -7,7 +7,6 @@ import com.es.phoneshop.model.product.ProductNotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
 
-
 public class DefaultCartService implements CartService{
     private static final String CART_SESSION_ATTRIBUTE = DefaultCartService.class.getName() + ".cart";
     private ProductDao productDao;

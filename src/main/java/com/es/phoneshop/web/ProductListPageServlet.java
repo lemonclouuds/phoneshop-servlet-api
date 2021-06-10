@@ -35,7 +35,7 @@ public class ProductListPageServlet extends HttpServlet {
                                                         query,
                                                         Optional.ofNullable(sortField).map(name -> SortField.valueOf(name.toUpperCase())).orElse(null),
                                                         Optional.ofNullable(sortOrder).map(name1 -> SortOrder.valueOf(name1.toUpperCase())).orElse(null)));
-        request.setAttribute("viewHistory", recentlyViewedService.getViewHistoryList(request));
+        request.setAttribute("viewHistory", recentlyViewedService.getRecentlyViewedList(request));
         request.getRequestDispatcher("/WEB-INF/pages/productList.jsp").forward(request, response);
     }
 }

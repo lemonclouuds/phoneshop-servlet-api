@@ -25,7 +25,7 @@ public class DefaultRecentlyViewedService implements RecentlyViewedService {
     }
 
     @Override
-    public synchronized RecentlyViewedList getViewHistoryList(HttpServletRequest request) {
+    public synchronized RecentlyViewedList getRecentlyViewedList(HttpServletRequest request) {
         RecentlyViewedList list = (RecentlyViewedList) request.getSession().getAttribute(VIEW_HISTORY_LIST_SESSION_ATTRIBUTE);
         if (list == null) {
             request.getSession().setAttribute(VIEW_HISTORY_LIST_SESSION_ATTRIBUTE, list = new RecentlyViewedList());

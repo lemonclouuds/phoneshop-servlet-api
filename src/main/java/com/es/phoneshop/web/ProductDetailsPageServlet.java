@@ -35,12 +35,12 @@ public class ProductDetailsPageServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             Long productId = parseProductId(request);
-            RecentlyViewedList recentlyViewedList = recentlyViewedService.getViewHistoryList(request);
+            RecentlyViewedList recentlyViewedList = recentlyViewedService.getRecentlyViewedList(request);
             recentlyViewedService.add(recentlyViewedList, productId);
 
             request.setAttribute("product", productDao.getProduct(productId));
             request.setAttribute("cart", cartService.getCart(request));
-            request.setAttribute("viewHistory", recentlyViewedService.getViewHistoryList(request));
+            request.setAttribute("viewHistory", recentlyViewedService.getRecentlyViewedList(request));
         } catch (ProductNotFoundException | NumberFormatException ex) {
             request.setAttribute("message", "Product not found.");
             response.sendError(404);
@@ -70,7 +70,6 @@ public class ProductDetailsPageServlet extends HttpServlet {
             doGet(request, response);
             return;
         }
-        request.setAttribute("message", "Product added to cart!");
         response.sendRedirect(request.getContextPath() + "/products/" + productId + "?message=Product added to cart");
     }
 
