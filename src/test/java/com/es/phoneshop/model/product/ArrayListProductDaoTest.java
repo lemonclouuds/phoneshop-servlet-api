@@ -32,6 +32,7 @@ public class ArrayListProductDaoTest {
         productDao.save(product);
         assertNotNull(product.getId());
         Product result = productDao.getProduct(product.getId());
+
         assertNotNull(result);
         assertEquals("test-product", result.getCode());
     }
@@ -41,6 +42,7 @@ public class ArrayListProductDaoTest {
         Product product = new Product("test-product", "Specially for tests", new BigDecimal(200), usd, 10, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Apple/Apple%20iPhone.jpg");
         productDao.save(product);
         productDao.delete(product.getId());
+
         assertFalse(productDao.findProducts().contains(product));
     }
 
@@ -85,6 +87,7 @@ public class ArrayListProductDaoTest {
         List<Product> expected = Arrays.asList(productDao.getProduct(product1.getId()),
                 productDao.getProduct(product2.getId()),
                 productDao.getProduct(product3.getId()));
+
         assertEquals(expected, productDao.findProducts(query, SortField.DESCRIPTION, SortOrder.ASC));
     }
 
@@ -100,6 +103,7 @@ public class ArrayListProductDaoTest {
         List<Product> expected = Arrays.asList(productDao.getProduct(product3.getId()),
                 productDao.getProduct(product2.getId()),
                 productDao.getProduct(product1.getId()));
+
         assertEquals(expected, productDao.findProducts(query, SortField.DESCRIPTION, SortOrder.DESC));
     }
 
@@ -115,6 +119,7 @@ public class ArrayListProductDaoTest {
         List<Product> expected = Arrays.asList(productDao.getProduct(product1.getId()),
                 productDao.getProduct(product2.getId()),
                 productDao.getProduct(product3.getId()));
+
         assertEquals(expected, productDao.findProducts(query, SortField.PRICE, SortOrder.ASC));
     }
 
@@ -130,6 +135,7 @@ public class ArrayListProductDaoTest {
         List<Product> expected = Arrays.asList(productDao.getProduct(product6.getId()),
                 productDao.getProduct(product5.getId()),
                 productDao.getProduct(product4.getId()));
+
         assertEquals(expected, productDao.findProducts(query, SortField.PRICE, SortOrder.DESC));
     }
 
@@ -145,6 +151,7 @@ public class ArrayListProductDaoTest {
         List<Product> expected = Arrays.asList(productDao.getProduct(product4.getId()),
                 productDao.getProduct(product5.getId()),
                 productDao.getProduct(product6.getId()));
+
         assertEquals(expected, productDao.findProducts(query));
     }
 
@@ -160,6 +167,7 @@ public class ArrayListProductDaoTest {
         List<Product> expected = Arrays.asList(productDao.getProduct(product5.getId()),
                 productDao.getProduct(product6.getId()),
                 productDao.getProduct(product4.getId()));
+
         assertEquals(expected, productDao.findProducts(query));
     }
 }

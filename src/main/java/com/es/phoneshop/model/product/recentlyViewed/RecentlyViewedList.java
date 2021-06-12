@@ -2,9 +2,7 @@ package com.es.phoneshop.model.product.recentlyViewed;
 
 import com.es.phoneshop.model.product.Product;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.Iterator;
+import java.util.*;
 
 public class RecentlyViewedList {
     private Deque<Product> lastViewed;
@@ -40,6 +38,6 @@ public class RecentlyViewedList {
     }
 
     public Deque<Product> getLastViewed() {
-        return lastViewed;
+        return new ArrayDeque<>(lastViewed);
     }
 }

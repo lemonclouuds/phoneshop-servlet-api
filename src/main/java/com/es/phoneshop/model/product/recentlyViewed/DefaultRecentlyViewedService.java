@@ -5,6 +5,7 @@ import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.product.ProductDao;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Deque;
 
 public class DefaultRecentlyViewedService implements RecentlyViewedService {
     private static final String VIEW_HISTORY_LIST_SESSION_ATTRIBUTE = DefaultRecentlyViewedService.class.getName() + ".list";
@@ -38,6 +39,11 @@ public class DefaultRecentlyViewedService implements RecentlyViewedService {
             request.getSession().setAttribute(VIEW_HISTORY_LIST_SESSION_ATTRIBUTE, list = new RecentlyViewedList());
         }
         return list;
+    }
+
+    @Override
+    public Deque<Product> getRecentlyViewedListItems(RecentlyViewedList list) {
+        return list.getLastViewed();
     }
 
     @Override
