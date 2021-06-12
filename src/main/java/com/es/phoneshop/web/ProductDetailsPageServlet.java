@@ -41,7 +41,7 @@ public class ProductDetailsPageServlet extends HttpServlet {
 
             request.setAttribute("product", productDao.getProduct(productId));
             request.setAttribute("cart", cartService.getCart(request));
-            request.setAttribute("viewHistory", recentlyViewedService.getRecentlyViewedList(request));
+            request.setAttribute("recentlyViewed", recentlyViewedService.getRecentlyViewedList(request));
         } catch (ProductNotFoundException | NumberFormatException ex) {
             request.setAttribute("message", "Product not found.");
             response.sendError(404);
