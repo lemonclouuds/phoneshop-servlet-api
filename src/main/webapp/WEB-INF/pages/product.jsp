@@ -51,7 +51,7 @@
             </td>
           </tr>
           <tr>
-            <td>stock</td>
+            <td>quantity</td>
             <td class="quantity">
                 <input name="quantity" value="${not empty error ? param.quantity : 1}">
                 <c:if test="${not empty error}">
