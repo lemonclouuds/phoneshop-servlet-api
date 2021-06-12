@@ -1,6 +1,7 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ tag trimDirectiveWhitespaces="true" %>
 <%@ attribute name="lastViewedProducts" type="java.util.Deque" required="true" %>
-
 
 <table>
       <c:forEach var="product" items="${lastViewedProducts}">
