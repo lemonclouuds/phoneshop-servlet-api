@@ -54,10 +54,8 @@ public class DefaultCartService implements CartService{
                 .findAny();
         if (result.isPresent()) {
             result.get().setQuantity(result.get().getQuantity() + quantity);
-            product.setStock(product.getStock() - quantity);
             return;
         }
         cart.getItems().add(cartItem);
-        product.setStock(product.getStock() - quantity);
     }
 }
