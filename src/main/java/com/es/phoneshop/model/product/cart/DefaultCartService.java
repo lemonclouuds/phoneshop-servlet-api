@@ -6,6 +6,7 @@ import com.es.phoneshop.model.product.ProductDao;
 import com.es.phoneshop.model.product.ProductNotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
 public class DefaultCartService implements CartService{
     private static final String CART_SESSION_ATTRIBUTE = DefaultCartService.class.getName() + ".cart";
@@ -48,12 +49,11 @@ public class DefaultCartService implements CartService{
         }
         CartItem cartItem = new CartItem(product, quantity);
 
-        if (cart.getItems().contains(cartItem)) {
-            CartItem result = cart.getItems().stream()
-                    .filter(cartItem1 -> cartItem1.getProduct().getId().equals(productId))
-                    .findFirst()
-                    .orElseThrow(() -> new ProductNotFoundException(productId));
-            result.setQuantity(result.getQuantity() + quantity);
+        Optional<CartItem> result = cart.getItems().stream()
+                .filter(cartItem1 -> cartItem1.getProduct().getId().equals(productId))
+                .findAny();
+        if (result.isPresent()) {
+            result.get().setQuantity(result.get().getQuantity() + quantity);
             product.setStock(product.getStock() - quantity);
             return;
         }
