@@ -45,4 +45,8 @@
       </tr>
     </c:forEach>
   </table>
+    <p>
+    Recently viewed products
+    </p>
+    <tags:recentlyViewedProducts lastViewedProducts="${recentlyViewed.lastViewed}"/>
 </tags:master>

@@ -11,13 +11,19 @@ public class ArrayListProductDao implements ProductDao {
     private long currId;
     private List<Product> products;
 
-    private static ProductDao instance;
+    private static volatile ProductDao instance;
 
-    public static synchronized ProductDao getInstance() {
-        if (instance == null) {
-            instance = new ArrayListProductDao();
+    public static ProductDao getInstance() {
+        ProductDao localInstance = instance;
+        if (localInstance == null) {
+            synchronized (ProductDao.class) {
+                localInstance = instance;
+                if (localInstance == null) {
+                    instance = localInstance = new ArrayListProductDao();
+                }
+            }
         }
-        return instance;
+        return localInstance;
     }
 
     private ArrayListProductDao() {

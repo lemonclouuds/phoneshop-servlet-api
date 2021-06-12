@@ -6,12 +6,25 @@
 <jsp:useBean id="product" type="com.es.phoneshop.model.product.Product" scope="request"/>
 <tags:master pageTitle="Product">
   <p>
-    ${product.description}
+    Cart: ${cart}
   </p>
-  <form>
-      <input name="query" value="${param.query}">
-      <button>Search</button>
-    </form>
+  <c:if test="${not empty message}">
+    <div class="success">
+        ${message}
+    </div>
+  </c:if>
+  <c:if test="${not empty error}">
+    <div class="error">
+          There was an error adding to cart.
+    </div>
+    </c:if>
+  <p>
+      ${product.description}
+  </p>
+  <p>
+    Cart
+  </p>
+  <form method="post">
     <table>
         <tr>
           <td>Image</td>
@@ -27,7 +40,7 @@
           </tr>
           <tr>
             <td>price</td>
-            <td>
+            <td class="price">
               <fmt:formatNumber value="${product.price}" type="currency" currencySymbol="${product.currency.symbol}"/>
             </td>
           </tr>
@@ -36,6 +49,25 @@
             <td>
               ${product.stock}
             </td>
-        </tr>
+          </tr>
+          <tr>
+            <td>quantity</td>
+            <td class="quantity">
+                <input name="quantity" value="${not empty error ? param.quantity : 1}">
+                <c:if test="${not empty error}">
+                    <div class="error">
+                    ${error}
+                    </div>
+                </c:if>
+            </td>
+          </tr>
     </table>
+    <p>
+        <button>Add to cart</button>
+    </p>
+  </form>
+  <p>
+  Recently viewed products
+  </p>
+    <tags:recentlyViewedProducts lastViewedProducts="${recentlyViewed.lastViewed}"/>
 </tags:master>
