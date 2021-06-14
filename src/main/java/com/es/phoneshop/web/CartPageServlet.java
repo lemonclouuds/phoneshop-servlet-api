@@ -1,6 +1,7 @@
 package com.es.phoneshop.web;
 
 import com.es.phoneshop.model.product.ArrayListProductDao;
+import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.product.ProductDao;
 import com.es.phoneshop.model.product.ProductNotFoundException;
 import com.es.phoneshop.model.product.cart.Cart;
@@ -16,6 +17,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CartPageServlet extends HttpServlet {
     private ProductDao productDao;
@@ -38,32 +41,46 @@ public class CartPageServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Long productId = parseProductId(request);
-        String quantityString = request.getParameter("quantity");
-        int quantity;
-        try {
-            NumberFormat format = NumberFormat.getInstance(request.getLocale());
-            quantity = format.parse(quantityString).intValue();
-        } catch (ParseException e) {
-            request.setAttribute(ERROR, "Not a number");
-            doGet(request, response);
-            return;
+        String[] productIds = request.getParameterValues("productId");
+        String[] quantities = request.getParameterValues("quantity");
+
+        Map<Long, String> errors =  new HashMap<>();
+        for (int i = 0; i < productIds.length; i++) {
+            Long productId = Long.valueOf(productIds[i]);
+            Cart cart = cartService.getCart(request);
+
+            int quantity;
+            try {
+                quantity = getQuantity(request, quantities[i]);
+                cartService.updateCart(cart, productId, quantity);
+            } catch (ParseException | OutOfStockException e) {
+                handleError(errors, productId, e);
+            }
         }
 
-        Cart cart = cartService.getCart(request);
-        try {
-            cartService.addProductToCart(cart, productId, quantity);
-        } catch (OutOfStockException e) {
-            request.setAttribute(ERROR, "Out of stock, available " + e.getStockAvailable());
+        if (errors.isEmpty()) {
+            response.sendRedirect(request.getContextPath() + "/cart?message=Cart updated successfully.");
+        } else {
+            request.setAttribute("errors", errors);
             doGet(request, response);
-            return;
         }
-        response.sendRedirect(request.getContextPath() + "/products/" + productId + "?message=Product added to cart");
     }
 
-    private Long parseProductId(HttpServletRequest request) {
-        String productInfo = request.getPathInfo().substring(1);
-        return Long.valueOf(productInfo);
+    private int getQuantity(HttpServletRequest request, String quantityString) throws ParseException {
+        NumberFormat format = NumberFormat.getInstance(request.getLocale());
+        return format.parse(quantityString).intValue();
+    }
+
+    private void handleError(Map<Long, String> errors, Long productId, Exception e) {
+        if (e.getClass().equals(ParseException.class)) {
+            errors.put(productId, "Not a number");
+        } else {
+            if (((OutOfStockException) e).getStockRequested() <= 0 ) {
+                errors.put(productId, "Can't be negative or zero");
+            } else {
+                errors.put(productId, "Out of stock, available" + ((OutOfStockException)e).getStockAvailable());
+            }
+        }
     }
 
     public void setProductDao(ProductDao productDao){

@@ -44,18 +44,38 @@ public class DefaultCartService implements CartService{
     @Override
     public synchronized void addProductToCart(Cart cart, Long productId, int quantity) throws OutOfStockException {
         Product product = productDao.getProduct(productId);
-        if (product.getStock() < quantity) {
-            throw new OutOfStockException(product, quantity, product.getStock());
-        }
-        CartItem cartItem = new CartItem(product, quantity);
+        Optional<CartItem> result = findCartItem(cart, productId, quantity);
 
-        Optional<CartItem> result = cart.getItems().stream()
-                .filter(cartItem1 -> cartItem1.getProduct().getId().equals(productId))
-                .findAny();
         if (result.isPresent()) {
             result.get().setQuantity(result.get().getQuantity() + quantity);
             return;
         }
+
+        CartItem cartItem = new CartItem(product, quantity);
         cart.getItems().add(cartItem);
+    }
+
+    @Override
+    public void updateCart(Cart cart, Long productId, int quantity) throws OutOfStockException {
+        Product product = productDao.getProduct(productId);
+        Optional<CartItem> result = findCartItem(cart, productId, quantity);
+
+        if (result.isPresent()) {
+            result.get().setQuantity(quantity);
+            return;
+        }
+        CartItem cartItem = new CartItem(product, quantity);
+        cart.getItems().add(cartItem);
+    }
+
+    private Optional<CartItem> findCartItem(Cart cart, Long productId, int quantity) throws OutOfStockException {
+        Product product = productDao.getProduct(productId);
+        if (product.getStock() < quantity) {
+            throw new OutOfStockException(product, quantity, product.getStock());
+        }
+
+        return cart.getItems().stream()
+                .filter(cartItem1 -> cartItem1.getProduct().getId().equals(productId))
+                .findAny();
     }
 }
