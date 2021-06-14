@@ -24,6 +24,7 @@
             <tags:sortLink sort="PRICE" order="ASC"/>
             <tags:sortLink sort="PRICE" order="DESC"/>
         </td>
+        <td class="quantity">Quantity</td>
       </tr>
     </thead>
     <c:forEach var="product" items="${products}">
@@ -42,6 +43,12 @@
                 <fmt:formatNumber value="${product.price}" type="currency" currencySymbol="${product.currency.symbol}"/>
             </a>
         </td>
+        <form method="post" action="${pageContext.servletContext.contextPath}/products/${product.id}">
+            <td class="quantity"><input name="quantity" value="1" class="quantity"></td>
+            <td>
+            <button>Add to cart</button>
+            </td>
+        </form>
       </tr>
     </c:forEach>
   </table>

@@ -10,7 +10,6 @@ public class Cart implements Serializable {
 
     private int totalQuantity;
     private BigDecimal totalCost;
-    private int test = 0;
 
     public Cart(List<CartItem> items) {
         this.items = items;
