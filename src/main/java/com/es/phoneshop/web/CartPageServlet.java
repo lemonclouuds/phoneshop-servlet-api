@@ -1,9 +1,7 @@
 package com.es.phoneshop.web;
 
 import com.es.phoneshop.model.product.ArrayListProductDao;
-import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.product.ProductDao;
-import com.es.phoneshop.model.product.ProductNotFoundException;
 import com.es.phoneshop.model.product.cart.Cart;
 import com.es.phoneshop.model.product.cart.CartService;
 import com.es.phoneshop.model.product.cart.DefaultCartService;
@@ -23,14 +21,12 @@ import java.util.Map;
 public class CartPageServlet extends HttpServlet {
     private ProductDao productDao;
     private CartService cartService;
-    private final String ERROR = "error";
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         productDao = ArrayListProductDao.getInstance();
         cartService = DefaultCartService.getInstance();
-        //recentlyViewedService = DefaultRecentlyViewedService.getInstance();
     }
 
     @Override

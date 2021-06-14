@@ -68,6 +68,11 @@ public class DefaultCartService implements CartService{
         cart.getItems().add(cartItem);
     }
 
+    @Override
+    public void deleteProductFromCart(Cart cart, Long productId) {
+        cart.getItems().removeIf(cartItem -> productId.equals(cartItem.getProduct().getId()));
+    }
+
     private Optional<CartItem> findCartItem(Cart cart, Long productId, int quantity) throws OutOfStockException {
         Product product = productDao.getProduct(productId);
         if (product.getStock() < quantity) {

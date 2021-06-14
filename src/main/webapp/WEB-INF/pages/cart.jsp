@@ -56,11 +56,17 @@
                 <fmt:formatNumber value="${item.product.price}" type="currency" currencySymbol="${item.product.currency.symbol}"/>
             </a>
         </td>
+        <td>
+            <button form="deleteCartItem"
+                    formaction="${pageContext.servletContext.contextPath}/cart/deleteCartItem/${item.product.id}">Delete</button>
+        </td>
       </tr>
     </c:forEach>
   </table>
   <p>
   <button>Update</button>
   </p>
+  </form>
+  <form id="deleteCartItem" method="post">
   </form>
 </tags:master>
