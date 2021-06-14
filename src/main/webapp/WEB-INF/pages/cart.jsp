@@ -7,7 +7,7 @@
 <tags:master pageTitle="Cart">
 <form method="post" action="${pageContext.servletContext.contextPath}/cart">
   <p>
-    Cart: ${cart}
+    Cart: ${cart}, total quantity: ${cart.totalQuantity}
   </p>
   <c:if test="${not empty param.message}">
       <div class="success">
@@ -62,6 +62,14 @@
         </td>
       </tr>
     </c:forEach>
+    <tr class="price">
+        <td></td>
+        <td></td>
+        <td>Total cost</td>
+        <td>
+        <fmt:formatNumber value="${cart.totalCost}" type="currency" currencySymbol="${item.product.currency.symbol}"/>
+        </td>
+    </tr>
   </table>
   <p>
   <button>Update</button>

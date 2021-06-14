@@ -4,6 +4,8 @@ import com.es.phoneshop.model.product.ArrayListProductDao;
 import com.es.phoneshop.model.product.ProductDao;
 import com.es.phoneshop.model.product.SortField;
 import com.es.phoneshop.model.product.SortOrder;
+import com.es.phoneshop.model.product.cart.CartService;
+import com.es.phoneshop.model.product.cart.DefaultCartService;
 import com.es.phoneshop.model.product.recentlyViewed.DefaultRecentlyViewedService;
 import com.es.phoneshop.model.product.recentlyViewed.RecentlyViewedService;
 
@@ -18,12 +20,14 @@ import java.util.Optional;
 public class ProductListPageServlet extends HttpServlet {
     private ProductDao productDao;
     private RecentlyViewedService recentlyViewedService;
+    private CartService cartService;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         productDao = ArrayListProductDao.getInstance();
         recentlyViewedService = DefaultRecentlyViewedService.getInstance();
+        cartService = DefaultCartService.getInstance();
     }
 
     @Override
