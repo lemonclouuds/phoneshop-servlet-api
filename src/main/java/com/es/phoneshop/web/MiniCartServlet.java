@@ -27,4 +27,8 @@ public class MiniCartServlet extends HttpServlet {
 
         request.getRequestDispatcher("/WEB-INF/pages/minicart.jsp").include(request, response);
     }
+
+    public void setCartService(CartService cartService){
+        this.cartService = cartService;
+    }
 }

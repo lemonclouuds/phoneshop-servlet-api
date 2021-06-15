@@ -1,8 +1,5 @@
 package com.es.phoneshop.web;
 
-import com.es.phoneshop.model.product.ArrayListProductDao;
-import com.es.phoneshop.model.product.Product;
-import com.es.phoneshop.model.product.ProductDao;
 import com.es.phoneshop.model.product.cart.Cart;
 import com.es.phoneshop.model.product.cart.CartService;
 import com.es.phoneshop.model.product.cart.DefaultCartService;
@@ -15,14 +12,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class DeleteCartItemServlet extends HttpServlet {
-    private ProductDao productDao;
     private CartService cartService;
-    private final String ERROR = "error";
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        productDao = ArrayListProductDao.getInstance();
         cartService = DefaultCartService.getInstance();
     }
 
@@ -35,7 +29,7 @@ public class DeleteCartItemServlet extends HttpServlet {
         response.sendRedirect(request.getContextPath() + "/cart?message=Cart item removed successfully.");
     }
 
-    public void setProductDao(ProductDao productDao){
-        this.productDao = productDao;
+    public void setCartService(CartService cartService){
+        this.cartService = cartService;
     }
 }
