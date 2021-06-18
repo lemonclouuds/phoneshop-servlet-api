@@ -4,7 +4,7 @@ import com.es.phoneshop.model.product.ArrayListProductDao;
 import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.product.ProductDao;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.util.Optional;
 
@@ -33,10 +33,10 @@ public class DefaultCartService implements CartService{
     }
 
     @Override
-    public synchronized Cart getCart(HttpServletRequest request) {
-        Cart cart = (Cart) request.getSession().getAttribute(CART_SESSION_ATTRIBUTE);
+    public synchronized Cart getCart(HttpSession session) {
+        Cart cart = (Cart) session.getAttribute(CART_SESSION_ATTRIBUTE);
         if (cart == null) {
-            request.getSession().setAttribute(CART_SESSION_ATTRIBUTE, cart = new Cart());
+            session.setAttribute(CART_SESSION_ATTRIBUTE, cart = new Cart());
         }
         return cart;
     }
@@ -44,6 +44,14 @@ public class DefaultCartService implements CartService{
     @Override
     public synchronized void addProductToCart(Cart cart, Long productId, int quantity) throws OutOfStockException {
         Product product = productDao.getProduct(productId);
+        if (quantity <= 0) {
+            throw new OutOfStockException(product, quantity, product.getStock());
+        }
+
+        if (product.getStock() < quantity) {
+            throw new OutOfStockException(product, quantity, product.getStock());
+        }
+
         Optional<CartItem> result = findCartItem(cart, productId, quantity);
 
         if (result.isPresent()) {
@@ -59,16 +67,20 @@ public class DefaultCartService implements CartService{
     @Override
     public void updateCart(Cart cart, Long productId, int quantity) throws OutOfStockException {
         Product product = productDao.getProduct(productId);
+        if (quantity <= 0) {
+            throw new OutOfStockException(product, quantity, product.getStock());
+        }
+
+        if (product.getStock() < quantity) {
+            throw new OutOfStockException(product, quantity, product.getStock());
+        }
+
         Optional<CartItem> result = findCartItem(cart, productId, quantity);
 
         if (result.isPresent()) {
             result.get().setQuantity(quantity);
             recalculateCart(cart);
-            return;
         }
-        CartItem cartItem = new CartItem(product, quantity);
-        cart.getItems().add(cartItem);
-        recalculateCart(cart);
     }
 
     @Override
@@ -78,12 +90,7 @@ public class DefaultCartService implements CartService{
     }
 
     @Override
-    public Optional<CartItem> findCartItem(Cart cart, Long productId, int quantity) throws OutOfStockException {
-        Product product = productDao.getProduct(productId);
-        if (product.getStock() < quantity) {
-            throw new OutOfStockException(product, quantity, product.getStock());
-        }
-
+    public Optional<CartItem> findCartItem(Cart cart, Long productId, int quantity) {
         return cart.getItems().stream()
                 .filter(cartItem1 -> cartItem1.getProduct().getId().equals(productId))
                 .findAny();
@@ -91,13 +98,14 @@ public class DefaultCartService implements CartService{
 
     private void recalculateCart(Cart cart){
         cart.setTotalQuantity(cart.getItems().stream()
-                .map(CartItem::getQuantity).mapToInt(q -> q).sum()
+                .map(CartItem::getQuantity)
+                .mapToInt(q -> q)
+                .sum()
         );
 
-        BigDecimal[] totalCost = {new BigDecimal(0)};
-        cart.getItems().forEach(item -> {
-            totalCost[0] = totalCost[0].add(item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
-        });
-        cart.setTotalCost(totalCost[0]);
+        cart.setTotalCost(cart.getItems().stream()
+                .map(cartItem -> cartItem.getProduct().getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+        );
     }
 }

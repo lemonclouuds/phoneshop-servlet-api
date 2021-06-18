@@ -22,9 +22,9 @@ public class DeleteCartItemServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String productId = request.getPathInfo().substring(1);
-        Cart cart = cartService.getCart(request);
-        cartService.deleteProductFromCart(cart, Long.valueOf(productId));
+        Long productId = Long.valueOf(request.getPathInfo().substring(1));
+        Cart cart = cartService.getCart(request.getSession());
+        cartService.deleteProductFromCart(cart, productId);
 
         response.sendRedirect(request.getContextPath() + "/cart?message=Cart item removed successfully.");
     }

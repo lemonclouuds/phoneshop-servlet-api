@@ -6,9 +6,6 @@
 <jsp:useBean id="cart" type="com.es.phoneshop.model.product.cart.Cart" scope="request"/>
 <tags:master pageTitle="Cart">
 <form method="post" action="${pageContext.servletContext.contextPath}/cart">
-  <p>
-    Cart: ${cart}, total quantity: ${cart.totalQuantity}
-  </p>
   <c:if test="${not empty param.message}">
       <div class="success">
           ${param.message}
@@ -67,7 +64,7 @@
         <td></td>
         <td>Total cost</td>
         <td>
-        <fmt:formatNumber value="${cart.totalCost}" type="currency" currencySymbol="${item.product.currency.symbol}"/>
+        <fmt:formatNumber value="${cart.totalCost}" type="currency" currencySymbol="${not empty cart.items ? cart.items.get(0).product.currency.symbol : ''}"/>
         </td>
     </tr>
   </table>

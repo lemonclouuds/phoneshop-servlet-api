@@ -14,7 +14,7 @@ public class CartServiceTest {
     private ProductDao productDao;
     private CartService cartService;
     Currency usd = Currency.getInstance("USD");
-    int quantity = 5;
+    private final int quantity = 5;
 
     @Before
     public void setup() {
@@ -48,7 +48,7 @@ public class CartServiceTest {
 
         cartService.addProductToCart(cart, product.getId(), newQuantity);
 
-        assertTrue(cart.getItems().get(0).getQuantity() == (quantity + newQuantity));
+        assertEquals(cart.getItems().get(0).getQuantity(), (quantity + newQuantity));
     }
 
     @Test (expected = OutOfStockException.class)
@@ -56,7 +56,7 @@ public class CartServiceTest {
         Product product = new Product("test-product", "Apple iPhone", new BigDecimal(200), usd, 10, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Apple/Apple%20iPhone.jpg");
         productDao.save(product);
 
-        quantity = 15;
+        int quantity = 15;
         Cart cart = new Cart();
         cartService.addProductToCart(cart, product.getId(), quantity);
     }
@@ -93,9 +93,7 @@ public class CartServiceTest {
         cartService.addProductToCart(cart, product.getId(), quantity);
 
         Optional<CartItem> result = cartService.findCartItem(cart, product.getId(), quantity);
-        if (result.isPresent()) {
-            assertEquals(result.get(), cartItem);
-        }
+        result.ifPresent(item -> assertEquals(item, cartItem));
     }
 
     @Test
@@ -108,5 +106,15 @@ public class CartServiceTest {
         cartService.updateCart(cart, product.getId(), 5);
 
         assertEquals(5, cart.getItems().get(0).getQuantity());
+    }
+
+    @Test (expected = OutOfStockException.class)
+    public void testFailedUpdateCart() throws OutOfStockException {
+        Product product = new Product("test-product", "Apple iPhone", new BigDecimal(200), usd, 10, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Apple/Apple%20iPhone.jpg");
+        productDao.save(product);
+
+        int quantity = 15;
+        Cart cart = new Cart();
+        cartService.updateCart(cart, product.getId(), quantity);
     }
 }

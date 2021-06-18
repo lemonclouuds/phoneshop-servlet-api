@@ -14,7 +14,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Locale;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
@@ -42,7 +41,7 @@ public class MiniCartServletTest {
         servlet.setCartService(cartService);
 
         when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
-        when(cartService.getCart(request)).thenReturn(new Cart());
+        when(cartService.getCart(request.getSession())).thenReturn(new Cart());
     }
 
     @Test
