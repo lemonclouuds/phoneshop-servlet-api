@@ -3,9 +3,9 @@ package com.es.phoneshop.model.product.cart;
 import com.es.phoneshop.model.product.ArrayListProductDao;
 import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.product.ProductDao;
-import com.es.phoneshop.model.product.ProductNotFoundException;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.math.BigDecimal;
 import java.util.Optional;
 
 public class DefaultCartService implements CartService{
@@ -33,10 +33,10 @@ public class DefaultCartService implements CartService{
     }
 
     @Override
-    public synchronized Cart getCart(HttpServletRequest request) {
-        Cart cart = (Cart) request.getSession().getAttribute(CART_SESSION_ATTRIBUTE);
+    public synchronized Cart getCart(HttpSession session) {
+        Cart cart = (Cart) session.getAttribute(CART_SESSION_ATTRIBUTE);
         if (cart == null) {
-            request.getSession().setAttribute(CART_SESSION_ATTRIBUTE, cart = new Cart());
+            session.setAttribute(CART_SESSION_ATTRIBUTE, cart = new Cart());
         }
         return cart;
     }
@@ -44,18 +44,68 @@ public class DefaultCartService implements CartService{
     @Override
     public synchronized void addProductToCart(Cart cart, Long productId, int quantity) throws OutOfStockException {
         Product product = productDao.getProduct(productId);
+        if (quantity <= 0) {
+            throw new IllegalArgumentException();
+        }
+
         if (product.getStock() < quantity) {
             throw new OutOfStockException(product, quantity, product.getStock());
         }
-        CartItem cartItem = new CartItem(product, quantity);
 
-        Optional<CartItem> result = cart.getItems().stream()
-                .filter(cartItem1 -> cartItem1.getProduct().getId().equals(productId))
-                .findAny();
+        Optional<CartItem> result = findCartItem(cart, productId, quantity);
+
         if (result.isPresent()) {
             result.get().setQuantity(result.get().getQuantity() + quantity);
+            recalculateCart(cart);
             return;
         }
+        CartItem cartItem = new CartItem(product, quantity);
         cart.getItems().add(cartItem);
+        recalculateCart(cart);
+    }
+
+    @Override
+    public void updateCart(Cart cart, Long productId, int quantity) throws OutOfStockException {
+        Product product = productDao.getProduct(productId);
+        if (quantity <= 0) {
+            throw new IllegalArgumentException();
+        }
+
+        if (product.getStock() < quantity) {
+            throw new OutOfStockException(product, quantity, product.getStock());
+        }
+
+        Optional<CartItem> result = findCartItem(cart, productId, quantity);
+
+        if (result.isPresent()) {
+            result.get().setQuantity(quantity);
+            recalculateCart(cart);
+        }
+    }
+
+    @Override
+    public void deleteProductFromCart(Cart cart, Long productId) {
+        cart.getItems().removeIf(cartItem -> productId.equals(cartItem.getProduct().getId()));
+        recalculateCart(cart);
+    }
+
+    @Override
+    public Optional<CartItem> findCartItem(Cart cart, Long productId, int quantity) {
+        return cart.getItems().stream()
+                .filter(cartItem1 -> cartItem1.getProduct().getId().equals(productId))
+                .findAny();
+    }
+
+    private void recalculateCart(Cart cart){
+        cart.setTotalQuantity(cart.getItems().stream()
+                .map(CartItem::getQuantity)
+                .mapToInt(q -> q)
+                .sum()
+        );
+
+        cart.setTotalCost(cart.getItems().stream()
+                .map(cartItem -> cartItem.getProduct().getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+        );
     }
 }

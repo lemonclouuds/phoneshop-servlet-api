@@ -40,7 +40,7 @@ public class ProductDetailsPageServlet extends HttpServlet {
             recentlyViewedService.add(recentlyViewedList, productId);
 
             request.setAttribute("product", productDao.getProduct(productId));
-            request.setAttribute("cart", cartService.getCart(request));
+            request.setAttribute("cart", cartService.getCart(request.getSession()));
             request.setAttribute("recentlyViewed", recentlyViewedService.getRecentlyViewedList(request));
         } catch (ProductNotFoundException | NumberFormatException ex) {
             request.setAttribute("message", "Product not found.");
@@ -63,11 +63,11 @@ public class ProductDetailsPageServlet extends HttpServlet {
             return;
         }
 
-        Cart cart = cartService.getCart(request);
+        Cart cart = cartService.getCart(request.getSession());
         try {
             cartService.addProductToCart(cart, productId, quantity);
-        } catch (OutOfStockException e) {
-            request.setAttribute(ERROR, "Out of stock, available " + e.getStockAvailable());
+        } catch (OutOfStockException | IllegalArgumentException e) {
+            request.setAttribute(ERROR, "Out of stock, available " + ((OutOfStockException)e).getStockAvailable());
             doGet(request, response);
             return;
         }
