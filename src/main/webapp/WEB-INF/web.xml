@@ -21,6 +21,7 @@
   
   <servlet-mapping>
     <servlet-name>productList</servlet-name>
+    <url-pattern>/products/addToCart/*</url-pattern>
     <url-pattern>/products</url-pattern>
   </servlet-mapping>
 

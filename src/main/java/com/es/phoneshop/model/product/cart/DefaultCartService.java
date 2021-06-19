@@ -45,7 +45,7 @@ public class DefaultCartService implements CartService{
     public synchronized void addProductToCart(Cart cart, Long productId, int quantity) throws OutOfStockException {
         Product product = productDao.getProduct(productId);
         if (quantity <= 0) {
-            throw new OutOfStockException(product, quantity, product.getStock());
+            throw new IllegalArgumentException();
         }
 
         if (product.getStock() < quantity) {
@@ -68,7 +68,7 @@ public class DefaultCartService implements CartService{
     public void updateCart(Cart cart, Long productId, int quantity) throws OutOfStockException {
         Product product = productDao.getProduct(productId);
         if (quantity <= 0) {
-            throw new OutOfStockException(product, quantity, product.getStock());
+            throw new IllegalArgumentException();
         }
 
         if (product.getStock() < quantity) {

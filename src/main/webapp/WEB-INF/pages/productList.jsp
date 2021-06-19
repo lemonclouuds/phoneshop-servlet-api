@@ -43,7 +43,7 @@
                 <fmt:formatNumber value="${product.price}" type="currency" currencySymbol="${product.currency.symbol}"/>
             </a>
         </td>
-        <form method="post" action="${pageContext.servletContext.contextPath}/products/${product.id}">
+        <form method="post" action="${pageContext.servletContext.contextPath}/products/addToCart/${product.id}">
             <td class="quantity"><input name="quantity" value="1" class="quantity"></td>
             <td>
             <button>Add to cart</button>
