@@ -3,7 +3,6 @@ package com.es.phoneshop.web;
 import com.es.phoneshop.model.product.cart.Cart;
 import com.es.phoneshop.model.product.cart.CartService;
 import com.es.phoneshop.model.product.cart.DefaultCartService;
-import com.es.phoneshop.model.product.cart.OutOfStockException;
 import com.es.phoneshop.model.product.order.DefaultOrderService;
 import com.es.phoneshop.model.product.order.Order;
 import com.es.phoneshop.model.product.order.OrderService;
@@ -15,9 +14,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -27,7 +25,7 @@ public class CheckoutPageServlet extends HttpServlet {
     private OrderService orderService;
 
     protected static final String CHECKOUT_JSP = "/WEB-INF/pages/checkout.jsp";
-
+    protected static final String DATE_PARSING_PATTERN = "dd.MM.yyyy";
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
@@ -53,7 +51,7 @@ public class CheckoutPageServlet extends HttpServlet {
         setRequiredParameter(request, "firstName", errors, order::setFirstName);
         setRequiredParameter(request, "lastName", errors, order::setLastName);
         setRequiredParameter(request, "phone", errors, order::setPhone);
-        setDeliveryDate(request, errors, order);
+        setDeliveryDate(request, errors, DATE_PARSING_PATTERN, order);
         setRequiredParameter(request, "deliveryAddress", errors, order::setDeliveryAddress);
         setPaymentMethod(request, errors, order);
 
@@ -64,7 +62,8 @@ public class CheckoutPageServlet extends HttpServlet {
                               Order order) throws IOException, ServletException {
         if (errors.isEmpty()) {
             orderService.placeOrder(order);
-            response.sendRedirect(request.getContextPath() + "/checkout?Success");
+            cartService.clearCart(cartService.getCart(request.getSession()));
+            response.sendRedirect(request.getContextPath() + "/order/overview/" + order.getSecureId());
         } else {
             request.setAttribute("errors", errors);
             request.setAttribute("order", order);
@@ -96,12 +95,12 @@ public class CheckoutPageServlet extends HttpServlet {
         }
     }
 
-    private void setDeliveryDate(HttpServletRequest request, Map<String, String> errors, Order order) {
+    private void setDeliveryDate(HttpServletRequest request, Map<String, String> errors, String pattern, Order order) {
         String value = request.getParameter("deliveryDate");
         if (value == null || value.isEmpty()) {
             errors.put("deliveryDate", "Value is required");
         } else {
-            order.setDeliveryDate(LocalDate.parse(value));
+            order.setDeliveryDate(LocalDate.parse(value, DateTimeFormatter.ofPattern(pattern)));
         }
     }
 }

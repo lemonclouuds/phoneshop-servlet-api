@@ -6,6 +6,7 @@ import com.es.phoneshop.model.product.cart.CartItem;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class DefaultOrderService implements OrderService {
@@ -48,6 +49,7 @@ public class DefaultOrderService implements OrderService {
 
     @Override
     public void placeOrder(Order order) {
+        order.setSecureId(UUID.randomUUID().toString());
         orderDao.saveOrder(order);
     }
 }

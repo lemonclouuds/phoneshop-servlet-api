@@ -79,13 +79,28 @@
     <url-pattern>/checkout</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>orderOverview</servlet-name>
+    <servlet-class>com.es.phoneshop.web.OrderOverviewPageServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>orderOverview</servlet-name>
+    <url-pattern>/order/overview/*</url-pattern>
+  </servlet-mapping>
+
   <error-page>
     <location>/WEB-INF/pages/errorProductNotFound.jsp</location>
     <exception-type>com.es.phoneshop.model.product.ProductNotFoundException</exception-type>
   </error-page>
+
   <error-page>
-    <location>/WEB-INF/pages/error.jsp</location>
     <error-code>500</error-code>
+    <location>/WEB-INF/pages/error.jsp</location>
+  </error-page>
+
+  <error-page>
+    <exception-type>com.es.phoneshop.model.product.OrderNotFoundException</exception-type>
+    <location>/WEB-INF/pages/errorOrderNotFound.jsp</location>
   </error-page>
 
 </web-app>

@@ -47,4 +47,12 @@ public class ArrayListOrderDao implements OrderDao {
         }
         orderList.add(order);
     }
+
+    @Override
+    public Order getOrderBySecureId(String secureOrderId) {
+        return orderList.stream()
+                .filter(order -> secureOrderId.equals(order.getSecureId()))
+                .findAny()
+                .orElseThrow(OrderNotFoundException::new);
+    }
 }

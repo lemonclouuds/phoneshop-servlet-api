@@ -10,4 +10,6 @@ public interface CartService {
     void deleteProductFromCart(Cart cart, Long productId);
 
     Optional<CartItem> findCartItem(Cart cart, Long productId, int quantity) throws OutOfStockException;
+
+    void clearCart(Cart cart);
 }
