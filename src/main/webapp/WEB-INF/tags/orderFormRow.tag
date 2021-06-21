@@ -7,9 +7,15 @@
 
 <tr>
     <td>${label}<span style="color: red">*</span></td>
+    <c:set var="error" value="${errors[name]}"/>
     <td>
         <c:set var="error" value="${errors[name]}"/>
-        <input name="${name}" value="${not empty error ? param[name] : order[name]}">
+        <c:if test="${name eq 'deliveryDate'}">
+        	<input name="${name}" type="date" value="${not empty error ? param[name] : order[name]}">
+        </c:if>
+        <c:if test="${name ne 'deliveryDate'}">
+        	<input name="${name}" value="${not empty error ? param[name] : order[name]}">
+        </c:if>
         <c:if test="${not empty error}">
             <div class="error">
                 ${error}

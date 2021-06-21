@@ -78,67 +78,12 @@
   </table>
   <h2>Your details</h2>
   <table class="customerDetails">
-    <tr>
-        <td>First name<span style="color: red">*</span></td>
-        <td>
-            <c:set var="error" value="${errors['firstName']}"/>
-            <input name="firstName" value="${not empty error ? param['firstName'] : order.firstName}">
-            <c:if test="${not empty error}">
-                <div class="error">
-                    ${error}
-                </div>
-            </c:if>
-        </td>
-    </tr>
-    <tr>
-        <td>Last name<span style="color: red">*</span></td>
-        <td>
-        <c:set var="error" value="${errors['lastName']}"/>
-        <input name="lastName" value="${not empty error ? param['lastName'] : order.lastName}">
-        <c:if test="${not empty error}">
-            <div class="error">
-                  ${error}
-            </div>
-        </c:if>
-        </td>
-    </tr>
-    <tr>
-        <td>Phone<span style="color: red">*</span></td>
-        <td>
-        <c:set var="error" value="${errors['phone']}"/>
-        <input name="phone" value="${not empty error ? param['phone'] : order.phone}">
-        <c:if test="${not empty error}">
-            <div class="error">
-                  ${error}
-            </div>
-        </c:if>
-        </td>
-    </tr>
-    <tr>
-        <td>Delivery date<span style="color: red">*</span></td>
-        <td>
-        <c:set var="error" value="${errors['deliveryDate']}"/>
-        <input name="deliveryDate" value="${not empty error ? param['deliveryDate'] : order.deliveryDate}">
-        <c:if test="${not empty error}">
-            <div class="error">
-                  ${error}
-            </div>
-        </c:if>
-        </td>
-    </tr>
-    <tr>
-        <td>Delivery address<span style="color: red">*</span></td>
-        <td>
-        <c:set var="error" value="${errors['deliveryAddress']}"/>
-        <input name="deliveryAddress" value="${not empty error ? param['deliveryAddress'] : order.deliveryAddress}">
-        <c:if test="${not empty error}">
-            <div class="error">
-                  ${error}
-            </div>
-        </c:if>
-        </td>
-    </tr>
-    <tr>
+     <tags:orderFormRow name="firstName" label="First name" order="${order}" errors="${errors}"/>
+     <tags:orderFormRow name="lastName" label="Last name" order="${order}" errors="${errors}"/>
+     <tags:orderFormRow name="phone" label="Phone" order="${order}" errors="${errors}"/>
+     <tags:orderFormRow name="deliveryDate" label="Delivery date" order="${order}" errors="${errors}"/>
+     <tags:orderFormRow name="deliveryAddress" label="Delivery address" order="${order}" errors="${errors}"/>
+     <tr>
         <td>Payment method<span style="color: red">*</span></td>
         <td>
         <c:set var="error" value="${errors['paymentMethod']}"/>
@@ -154,7 +99,7 @@
             </div>
         </c:if>
         </td>
-    </tr>
+     </tr>
   </table>
   <p>
     <button>Place order</button>

@@ -25,7 +25,7 @@ public class CheckoutPageServlet extends HttpServlet {
     private OrderService orderService;
 
     protected static final String CHECKOUT_JSP = "/WEB-INF/pages/checkout.jsp";
-    protected static final String DATE_PARSING_PATTERN = "dd.MM.yyyy";
+    protected static final String DATE_PARSING_PATTERN = "yyyy-MM-dd";
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);

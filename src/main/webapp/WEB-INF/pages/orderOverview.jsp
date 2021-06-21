@@ -68,40 +68,15 @@
   </table>
   <h2>Your details</h2>
   <table class="customerDetails">
-    <tr>
-        <td>First name</td>
-        <td>
-            ${order.firstName}
-        </td>
-    </tr>
-    <tr>
-        <td>Last name</td>
-        <td>
-        ${order.lastName}
-        </td>
-    </tr>
-    <tr>
-        <td>Phone</td>
-        <td>
-        ${order.phone}
-        </td>
-    </tr>
-    <tr>
-        <td>Delivery date</td>
-        <td>
-        ${order.deliveryDate}
-        </td>
-    </tr>
-    <tr>
-        <td>Delivery address</td>
-        <td>
-       ${order.deliveryAddress}
-        </td>
-    </tr>
+    <tags:orderOverview name="firstName" label="Firs tname" order="${order}"/>
+    <tags:orderOverview name="lastName" label="Last name" order="${order}"/>
+    <tags:orderOverview name="phone" label="Phone" order="${order}"/>
+    <tags:orderOverview name="deliveryDate" label="Delivery date" order="${order}"/>
+    <tags:orderOverview name="deliveryAddress" label="Delivery address" order="${order}"/>
     <tr>
         <td>Payment method</td>
         <td>
-     ${order.paymentMethod}
+            ${order.paymentMethod}
         </td>
     </tr>
   </table>
