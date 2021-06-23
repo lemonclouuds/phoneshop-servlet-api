@@ -50,7 +50,6 @@ public class CheckoutPageServlet extends HttpServlet {
 
         setRequiredParameter(request, "firstName", errors, order::setFirstName);
         setRequiredParameter(request, "lastName", errors, order::setLastName);
-        setRequiredParameter(request, "phone", errors, order::setPhone);
         setPhone(request, errors, order);
         setDeliveryDate(request, errors, DATE_PARSING_PATTERN, order);
         setRequiredParameter(request, "deliveryAddress", errors, order::setDeliveryAddress);
