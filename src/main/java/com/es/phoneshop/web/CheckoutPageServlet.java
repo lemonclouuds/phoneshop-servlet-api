@@ -100,7 +100,12 @@ public class CheckoutPageServlet extends HttpServlet {
         if (value == null || value.isEmpty()) {
             errors.put("deliveryDate", "Value is required");
         } else {
-            order.setDeliveryDate(LocalDate.parse(value, DateTimeFormatter.ofPattern(pattern)));
+            LocalDate requestedDate = LocalDate.parse(value, DateTimeFormatter.ofPattern(pattern));
+            if (requestedDate.isBefore(LocalDate.now())) {
+                errors.put("deliveryDate", "Delivery date incorrect");
+            } else {
+                order.setDeliveryDate(LocalDate.parse(value, DateTimeFormatter.ofPattern(pattern)));
+            }
         }
     }
 }

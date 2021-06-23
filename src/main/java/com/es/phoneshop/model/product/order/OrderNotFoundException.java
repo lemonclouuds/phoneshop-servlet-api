@@ -1,12 +1,13 @@
 package com.es.phoneshop.model.product.order;
 
 public class OrderNotFoundException extends RuntimeException {
-    Long id;
+    private Long id;
 
     public OrderNotFoundException() {
     }
 
     public OrderNotFoundException(Long id) {
+        super("Order (id = " + id +") not found");
         this.id = id;
     }
 

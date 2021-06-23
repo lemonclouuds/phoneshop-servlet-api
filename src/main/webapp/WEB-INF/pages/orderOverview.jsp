@@ -68,11 +68,11 @@
   </table>
   <h2>Your details</h2>
   <table class="customerDetails">
-    <tags:orderOverview name="firstName" label="Firs tname" order="${order}"/>
-    <tags:orderOverview name="lastName" label="Last name" order="${order}"/>
-    <tags:orderOverview name="phone" label="Phone" order="${order}"/>
-    <tags:orderOverview name="deliveryDate" label="Delivery date" order="${order}"/>
-    <tags:orderOverview name="deliveryAddress" label="Delivery address" order="${order}"/>
+    <tags:orderOverviewRow name="firstName" label="Firs tname" order="${order}"/>
+    <tags:orderOverviewRow name="lastName" label="Last name" order="${order}"/>
+    <tags:orderOverviewRow name="phone" label="Phone" order="${order}"/>
+    <tags:orderOverviewRow name="deliveryDate" label="Delivery date" order="${order}"/>
+    <tags:orderOverviewRow name="deliveryAddress" label="Delivery address" order="${order}"/>
     <tr>
         <td>Payment method</td>
         <td>
