@@ -4,5 +4,5 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <tags:master pageTitle="Error">
-  <h1>Sorry, an error occurred :(</h1>
+  <h1>Sorry, the page you are looking for is not available :(</h1>
 </tags:master>

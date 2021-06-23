@@ -6,6 +6,7 @@ import com.es.phoneshop.model.product.ProductDao;
 
 import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Optional;
 
 public class DefaultCartService implements CartService{
@@ -94,6 +95,13 @@ public class DefaultCartService implements CartService{
         return cart.getItems().stream()
                 .filter(cartItem1 -> cartItem1.getProduct().getId().equals(productId))
                 .findAny();
+    }
+
+    @Override
+    public void clearCart(Cart cart) {
+        cart.setItems(new ArrayList<>());
+        cart.setTotalCost(BigDecimal.ZERO);
+        cart.setTotalQuantity(0);
     }
 
     private void recalculateCart(Cart cart){

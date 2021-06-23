@@ -56,7 +56,9 @@
         </td>
         <td>
             <button form="deleteCartItem"
-                    formaction="${pageContext.servletContext.contextPath}/cart/deleteCartItem/${item.product.id}">Delete</button>
+                    formaction="${pageContext.servletContext.contextPath}/cart/deleteCartItem/${item.product.id}">
+                Delete
+            </button>
         </td>
       </tr>
     </c:forEach>
@@ -72,6 +74,9 @@
   <p>
   <button>Update</button>
   </p>
+  </form>
+  <form action="${pageContext.servletContext.contextPath}/checkout">
+    <button>Checkout</button>
   </form>
   <form id="deleteCartItem" method="post"></form>
    </c:if>

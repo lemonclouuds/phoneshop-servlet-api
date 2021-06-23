@@ -6,6 +6,7 @@ import com.es.phoneshop.model.product.cart.Cart;
 import com.es.phoneshop.model.product.cart.CartService;
 import com.es.phoneshop.model.product.cart.DefaultCartService;
 import com.es.phoneshop.model.product.cart.OutOfStockException;
+import com.es.phoneshop.model.product.order.OrderService;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -21,6 +22,7 @@ import java.util.Map;
 public class CartPageServlet extends HttpServlet {
     private ProductDao productDao;
     private CartService cartService;
+    private OrderService orderService;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -81,5 +83,9 @@ public class CartPageServlet extends HttpServlet {
 
     public void setCartService(CartService cartService){
         this.cartService = cartService;
+    }
+
+    public void setOrderService(OrderService orderService){
+        this.orderService = orderService;
     }
 }
