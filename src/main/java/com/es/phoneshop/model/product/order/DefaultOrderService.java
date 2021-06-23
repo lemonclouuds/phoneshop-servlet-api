@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 public class DefaultOrderService implements OrderService {
 
     private OrderDao orderDao = ArrayListOrderDao.getInstance();
+    private OrderService orderService = DefaultOrderService.getInstance();
 
     private  static class SingletonHelper {
         public static final DefaultOrderService INSTANCE = new DefaultOrderService();
@@ -51,5 +52,15 @@ public class DefaultOrderService implements OrderService {
     public void placeOrder(Order order) {
         order.setSecureId(UUID.randomUUID().toString());
         orderDao.saveOrder(order);
+    }
+
+    @Override
+    public Order getOrderBySecureId(String secureOrderId) {
+        return orderDao.getOrderBySecureId(secureOrderId);
+    }
+
+    @Override
+    public boolean isPhoneCorrect(String number) {
+        return (number.matches("^[+]?375-?\\d{2}-?\\d{3}-?\\d{2}-?\\d{2}$"));
     }
 }

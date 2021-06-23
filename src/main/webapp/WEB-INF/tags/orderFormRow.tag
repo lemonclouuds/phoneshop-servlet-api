@@ -13,9 +13,14 @@
         <c:if test="${name eq 'deliveryDate'}">
         	<input name="${name}" type="date" value="${not empty error ? param[name] : order[name]}">
         </c:if>
+        <c:if test="${name eq 'phone'}">
+                    <input name="${name}" placeholder="(+)375-29-123-45-67" value="${not empty error ? param[name] : order[name]}">
+                </c:if>
         <c:if test="${name ne 'deliveryDate'}">
-        	<input name="${name}" value="${not empty error ? param[name] : order[name]}">
-        </c:if>
+            <c:if test="${name ne 'phone'}">
+        	    <input name="${name}" value="${not empty error ? param[name] : order[name]}">
+            </c:if>
+         </c:if>
         <c:if test="${not empty error}">
             <div class="error">
                 ${error}
