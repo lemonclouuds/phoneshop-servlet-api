@@ -1,9 +1,8 @@
 package com.es.phoneshop.model.product;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -88,6 +87,53 @@ public class ArrayListProductDao implements ProductDao {
                     .collect(Collectors.toList());
         }
         return result;
+    }
+
+    @Override
+    public List<Product> findProducts(String description, String wordOpt, BigDecimal minPrice, BigDecimal maxPrice) {
+        boolean isQueryEmpty = Stream.of(description, wordOpt, minPrice, maxPrice).allMatch(Objects::isNull);
+        if (isQueryEmpty) {
+            return new ArrayList<>();
+        }
+
+        if (description == null || description.isEmpty()) {
+            return products.stream()
+                    .filter(this::isProductNotNull)
+                    .filter(this::isPriceNotNull)
+                    .filter(this::isStockPositive)
+                    .filter(product -> product.getPrice().compareTo(minPrice) >= 0)
+                    .filter(product -> product.getPrice().compareTo(maxPrice) <= 0)
+                    .collect(Collectors.toList());
+        }
+
+        WordOptions wordOptions = WordOptions.valueOf(wordOpt.toUpperCase().replace(" ", "_"));
+        Predicate<Product> match;
+        String[] descriptionWords = description.trim().toLowerCase().split(" ");
+
+        match = getMatch(wordOptions, descriptionWords);
+
+        return products.stream()
+                .filter(this::isProductNotNull)
+                .filter(this::isPriceNotNull)
+                .filter(this::isStockPositive)
+                .filter(match)
+                .filter(minPrice != null ? product -> product.getPrice().compareTo(minPrice) >= 0 : product -> true)
+                .filter(maxPrice != null ? product -> product.getPrice().compareTo(maxPrice) <= 0 : product -> true)
+                .collect(Collectors.toList());
+    }
+
+    private Predicate<Product> getMatch(WordOptions wordOptions, String[] descriptionWords){
+        if (wordOptions == WordOptions.ANY_WORD) {
+            return product -> Arrays.stream(descriptionWords)
+                    .anyMatch(descriptionWord -> product.getDescription()
+                            .toLowerCase()
+                            .contains(descriptionWord));
+        } else {
+            return product -> Arrays.stream(descriptionWords)
+                    .allMatch(descriptionWord -> product.getDescription()
+                            .toLowerCase()
+                            .contains(descriptionWord));
+        }
     }
 
     private boolean isProductNotNull(Product product) {
